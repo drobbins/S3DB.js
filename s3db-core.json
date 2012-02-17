@@ -1,0 +1,32 @@
+{
+  "@context" : {
+    "s3db" : "http://www.s3db.org/core#",
+    "rdfs" : "http://www.w3.org/2000/01/rdf-schema#"
+  },
+  "@id" : [
+    {
+      "@id" : "s3db:entity",
+      "@type" : "rdfs:Class",
+      "rdfs:label" :  "S3DB entity",
+      "rdfs:comment" : "The class of all entities from the S3DB core model"
+    },
+    {
+      "@id" : "s3db:relationship",
+      "@type" : "rdfs:Class",
+      "rdfs:label" : "S3DB relationship",
+      "rdfs:comment" : "The class of all relationships between entities of the S3DB core model"
+    },
+    {
+      "@id" : "s3db:deployment",
+      "rdfs:label" : "S3DB Deployment",
+      "rdfs:comment" : "The physical location of an S3DB Deployment",
+      "rdfs:subClassOf" : "s3db:entity"
+    },
+    {
+      "@id" : "s3db:project",
+      "rdfs:label" : "S3DB Project",
+      "rdfs:comment" : "A contextualizer entity; can be used as the common attribute in a list of instances of s3db:rules describing the same domain",
+      "rdfs:subClassOf" :  "s3db:entity"
+    }
+  ]
+}
