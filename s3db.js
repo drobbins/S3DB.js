@@ -108,6 +108,11 @@
   //Version
   S3DB.Version = "0.0.1";
 
+  //Utility Function(s)
+  S3DB.uuid = function uuid(a){
+    return a?(a^Math.random()*16>>a/4).toString(16):([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,uuid);
+  };
+
   //Deployments
   S3DB.Deployment = function Deployment(){
     try{

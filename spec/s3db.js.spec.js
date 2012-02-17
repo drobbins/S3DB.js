@@ -1,5 +1,10 @@
 describe("S3DB.js", function(){
 
+  //Matches a random v4 UUID of the form xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx,
+  //where each x is replaced with a random hexadecimal digit from 0 to f, and
+  //y is replaced with a random hexadecimal digit from 8 to b.
+  var uuid_regex = /^[0-9a-zA-Z]{8}-[0-9a-zA-Z]{4}-4[0-9a-zA-Z]{3}-[89ab][0-9a-zA-Z]{3}-[0-9a-zA-Z]{12}$/;
+
   beforeEach(function(){
 
     var toType = function(obj) {
@@ -42,6 +47,11 @@ describe("S3DB.js", function(){
 
   it("should put S3DB as an object on the root object", function(){
     expect(S3DB).toBeAObject();
+  });
+
+  it("should provide a uuid at S3DB.uuid()", function(){
+    var uuid = S3DB.uuid();
+    expect(uuid).toMatch(uuid_regex);
   });
 
   describe("Deployments", function(){
