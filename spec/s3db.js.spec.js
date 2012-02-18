@@ -3,6 +3,7 @@ describe("S3DB.js", function(){
   //Matches a random v4 UUID of the form xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx,
   //where each x is replaced with a random hexadecimal digit from 0 to f, and
   //y is replaced with a random hexadecimal digit from 8 to b.
+  //(description from https://gist.github.com/982883)
   var uuid_regex = /^[0-9a-zA-Z]{8}-[0-9a-zA-Z]{4}-4[0-9a-zA-Z]{3}-[89ab][0-9a-zA-Z]{3}-[0-9a-zA-Z]{12}$/;
 
   beforeEach(function(){
@@ -63,12 +64,19 @@ describe("S3DB.js", function(){
     it("should throw an exception when trying to create a deployment without an rdf_store", function(){
       var temp = rdfstore;
       rdfstore = null;
-      expect(S3DB.Deployment).toThrow("rdf_store required to create deployments");
+      function test_creation_of_store(){
+        var deployment = new S3DB.Deployment("s3db-test");
+      }
+      expect(test_creation_of_store).toThrow("rdf_store required to create deployments");
       rdfstore = temp;
     });
 
+    it("should throw an exception when trying to create a deployment without a name", function(){
+      expect(S3DB.Deployment).toThrow("name option required to create a deployment");
+    });
+
     it("should expose a store property", function(){
-      var deployment = new S3DB.Deployment();
+      var deployment = new S3DB.Deployment("s3db-test");
       expect(deployment.store).toBeAObject();
     });
 
@@ -77,7 +85,7 @@ describe("S3DB.js", function(){
       var deployment;
 
       beforeEach(function(){
-        deployment = new S3DB.Deployment();
+        deployment = new S3DB.Deployment("s3db-test");
       });
 
       it("should be loaded with the appropriate prefixes", function(){
@@ -100,9 +108,23 @@ describe("S3DB.js", function(){
           expect(results.length).toBe(3);
         });
       });
-    });
 
-    describe("Projects", function(){
+      it("should contain a single element of type s3db:deployment", function(){
+        var callback = jasmine.createSpy();
+        deployment.store.execute("SELECT * WHERE {?s rdf:type s3db:deployment}", callback);
+        waitsFor(function(){
+          return callback.callCount > 0;
+        });
+        runs(function(){
+          var success = callback.argsForCall[0][0],
+              results = callback.argsForCall[0][1];
+          expect(success).toBeTruthy();
+          expect(results.length).toBe(1);
+        });
+      });
     });
+  });
+
+  describe("Projects", function(){
   });
 });

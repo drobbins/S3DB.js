@@ -110,31 +110,44 @@
 
   //Utility Function(s)
   S3DB.uuid = function uuid(a){
+    //Function from https://gist.github.com/982883 (@jed)
     return a?(a^Math.random()*16>>a/4).toString(16):([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,uuid);
   };
 
   //Deployments
-  S3DB.Deployment = function Deployment(){
+  S3DB.Deployment = function Deployment(name){
+    var store,
+        new_deployment = this,
+        prefix;
+
+    if (!name || typeof name !== 'string'){
+      throw "name option required to create a deployment";
+    }
+    new_deployment.name = name;
+    new_deployment.uri = "http://"+name+"/#";
+
     try{
-      var store = new rdfstore.Store(),
-          new_deployment = this,
-          prefix;
-
-      for (prefix in required_prefixes){
-        store.registerDefaultNamespace(prefix, required_prefixes[prefix]);
-      }
-
-      store.load("text/n3", s3db_as_n3, function(success, results){
-        if(!success){
-          throw "Unable to load S3DB core model";
-        }
-      });
-
-      new_deployment.store = store;
+      store = new rdfstore.Store();
     }
     catch(e){
       throw "rdf_store required to create deployments";
     }
+
+    for (prefix in required_prefixes){
+      store.registerDefaultNamespace(prefix, required_prefixes[prefix]);
+    }
+    store.registerDefaultProfileNamespaces(); //Registers typical namespaces, e.g. rdf, rdfs, owl
+
+    store.load("text/n3", s3db_as_n3, function(success, results){
+      if(!success){
+        throw "Unable to load S3DB core model";
+      }
+    });
+
+    store.execute("INSERT DATA { <"+new_deployment.uri+S3DB.uuid()+"> rdf:type s3db:deployment .}", function(success, results){
+    });
+
+    new_deployment.store = store;
   };
 
   //Put S3DB on the root object
