@@ -103,6 +103,11 @@
       S3DB = {},
       required_prefixes = {
         "s3db" : "http://purl.org/s3dbcore#"
+      },
+      extend = function extend(obj, source){
+        for (var prop in source){
+          obj[prop] = source[prop];
+        }
       };
 
   //Version
@@ -114,7 +119,7 @@
     return a?(a^Math.random()*16>>a/4).toString(16):([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,uuid);
   };
 
-  //Deployments
+  //Deployment Constructor
   S3DB.Deployment = function Deployment(name){
     var store,
         new_deployment = this,
@@ -145,10 +150,23 @@
     });
 
     store.execute("INSERT DATA { <"+new_deployment.uri+S3DB.uuid()+"> rdf:type s3db:deployment .}", function(success, results){
+      if(!success){
+        throw "Unable to create deployment";
+      }
     });
 
     new_deployment.store = store;
   };
+
+  //Load the deployment prototype with the remaining S3DB functions
+  extend(S3DB.Deployment.prototype, {
+
+    // Create functions
+    create : {
+      project : function(){}
+    }
+
+  });
 
   //Put S3DB on the root object
   root.S3DB = root.S3DB || S3DB;

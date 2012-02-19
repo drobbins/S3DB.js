@@ -126,5 +126,16 @@ describe("S3DB.js", function(){
   });
 
   describe("Projects", function(){
+
+    var deployment;
+
+    beforeEach(function(){
+      deployment = new S3DB.Deployment("s3db-test");
+    });
+
+    it("should provide a function Deployment.create.project() for creating projects", function(){
+      expect(deployment.create.project).toBeAFunction();
+    });
+
   });
 });
