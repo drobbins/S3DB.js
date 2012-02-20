@@ -156,15 +156,20 @@
     });
 
     new_deployment.store = store;
+
+    new_deployment.projects = [];
   };
 
   //Load the deployment prototype with the remaining S3DB functions
   extend(S3DB.Deployment.prototype, {
 
     // Create functions
-    create : {
-      project : function(){}
-    }
+    createProject : function(){
+      var projectID = S3DB.uuid().slice(0,6);
+      while (this.projects.indexOf(projectID) !== -1) projectID = S3DB.uuid().slice(0,6);
+      this.projects.push(projectID);
+      return projectID;
+    },
 
   });
 

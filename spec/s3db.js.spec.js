@@ -133,9 +133,14 @@ describe("S3DB.js", function(){
       deployment = new S3DB.Deployment("s3db-test");
     });
 
-    it("should provide a function Deployment.create.project() for creating projects", function(){
-      expect(deployment.create.project).toBeAFunction();
+    it("should provide a function Deployment.createProject() for creating projects", function(){
+      expect(deployment.createProject).toBeAFunction();
     });
 
+    it("should return a unique project id for the created project", function(){
+      var project1 = deployment.createProject(),
+          project2 = deployment.createProject();
+      expect(project1).not.toBe(project2);
+    });
   });
 });
