@@ -118,18 +118,9 @@
     //Function from https://gist.github.com/982883 (@jed)
     return a?(a^Math.random()*16>>a/4).toString(16):([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,uuid);
   };
-
-  //Deployment Constructor
-  S3DB.Deployment = function Deployment(name){
+  S3DB._DeploymentStore = function DeploymentStore(){
     var store,
-        new_deployment = this,
         prefix;
-
-    if (!name || typeof name !== 'string'){
-      throw "name option required to create a deployment";
-    }
-    new_deployment.name = name;
-    new_deployment.uri = "http://"+name+"/#";
 
     try{
       store = new rdfstore.Store();
@@ -149,15 +140,30 @@
       }
     });
 
-    store.execute("INSERT DATA { <"+new_deployment.uri+S3DB.uuid()+"> rdf:type s3db:deployment .}", function(success, results){
+    return store;
+  };
+
+  //Deployment Constructor
+  S3DB.Deployment = function Deployment(name){
+    var store;
+
+    if (!name || typeof name !== 'string'){
+      throw "name option required to create a deployment";
+    }
+    this.name = name;
+    this.uri = "http://"+name+"/#";
+
+    store = new S3DB._DeploymentStore();
+
+    store.execute("INSERT DATA { <"+this.uri+S3DB.uuid()+"> rdf:type s3db:deployment .}", function(success, results){
       if(!success){
         throw "Unable to create deployment";
       }
     });
 
-    new_deployment.store = store;
+    this.store = store;
 
-    new_deployment.projects = [];
+    this.projects = [];
   };
 
   //Load the deployment prototype with the remaining S3DB functions
@@ -169,7 +175,7 @@
       while (this.projects.indexOf(projectID) !== -1) projectID = S3DB.uuid().slice(0,6);
       this.projects.push(projectID);
       return projectID;
-    },
+    }
 
   });
 
