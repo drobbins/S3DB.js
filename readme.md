@@ -3,3 +3,8 @@ An attempt at creating a browser based implementation of [S3DB](http://s3db.org/
 
 ## Status
 pre-alpha
+
+## Use
+See the tests for currently implemented features.
+
+```` var deployment = new S3DB.deployment() ````
