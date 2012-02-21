@@ -142,5 +142,21 @@ describe("S3DB.js", function(){
           project2 = deployment.createProject();
       expect(project1).not.toBe(project2);
     });
+
+    it("should create triples identifying the project and linking it to the deployment", function(){
+      var project = deployment.createProject();
+          callback = jasmine.createSpy();
+      deployment.store.execute("SELECT * WHERE {?s rdf:type s3db:project . ?s ?p ?o .}", callback);
+      waitsFor(function(){
+        return callback.callCount > 0;
+      });
+      runs(function(){
+        var success = callback.argsForCall[0][0],
+            results = callback.argsForCall[0][1];
+        expect(success).toBeTruthy();
+        expect(results.length).toBe(1);
+        console.dir(results);
+      });
+    });
   });
 });
